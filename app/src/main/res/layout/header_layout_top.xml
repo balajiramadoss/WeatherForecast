@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/searchEditText"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/searchImageView"
+        android:layout_toLeftOf="@+id/searchImageView"
+        android:background="@drawable/edittext_background_corner"
+        android:hint="  Search city name"
+        android:lines="1"
+        android:padding="2dp"
+        android:singleLine="true" />
+
+    <ImageView
+        android:id="@+id/searchImageView"
+        android:layout_width="60dp"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/searchicon" />
+
+
+</RelativeLayout>

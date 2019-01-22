@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorAccent">
+
+    <RelativeLayout
+        android:id="@+id/imageLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:gravity="center"
+        android:padding="20dp">
+
+        <ImageView
+            android:id="@+id/weatherIcon"
+            android:layout_width="130dp"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/conditionText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/weatherIcon"
+            android:layout_centerInParent="true"
+            android:text="condition" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_toEndOf="@+id/imageLayout"
+        android:layout_toRightOf="@+id/imageLayout"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/maxTemp"
+            android:layout_alignRight="@+id/maxTemp"
+            android:gravity="center"
+            android:text="date" />
+
+        <TextView
+            android:id="@+id/maxTemp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/date"
+            android:text="50 C"
+            android:textSize="45sp" />
+
+        <TextView
+            android:id="@+id/minTemp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/maxTemp"
+            android:layout_alignLeft="@+id/maxTemp"
+            android:layout_alignRight="@+id/maxTemp"
+            android:gravity="center"
+            android:text="30 C"
+            android:textSize="15sp" />
+
+    </RelativeLayout>
+
+
+</RelativeLayout>
