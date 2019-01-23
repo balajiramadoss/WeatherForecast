@@ -1,6 +1,7 @@
 package com.example.balaji.myweatherapp.weatherSearch;
 
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -25,13 +26,14 @@ import android.widget.TextView;
 import com.example.balaji.myweatherapp.MainActivity;
 import com.example.balaji.myweatherapp.R;
 import com.example.balaji.myweatherapp.listeners.ApiListener;
+import com.example.balaji.myweatherapp.listeners.DataPassListener;
 import com.example.balaji.myweatherapp.listeners.OnItemClickListener;
+import com.example.balaji.myweatherapp.models.Forecastday;
 import com.example.balaji.myweatherapp.models.SearchItem;
 import com.example.balaji.myweatherapp.models.WeatherInfo;
 import com.example.balaji.myweatherapp.service.VolleyService;
 import com.example.balaji.myweatherapp.utils.Utils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
@@ -56,7 +58,7 @@ public class WeatherFragment extends Fragment implements View.OnClickListener, O
     private MainActivity activity;
     private ActionBar actionBar;
     private List<SearchItem> searchItems;
-
+    private DataPassListener dataPassListener;
     public WeatherFragment() {
         // Required empty public constructor
     }
@@ -67,6 +69,16 @@ public class WeatherFragment extends Fragment implements View.OnClickListener, O
         fragment.setArguments(args);
         fragment.activity = activity;
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            dataPassListener = (DataPassListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement DataPassListener");
+        }
     }
 
     private void setDetails(WeatherInfo weatherDetails) {
@@ -85,7 +97,7 @@ public class WeatherFragment extends Fragment implements View.OnClickListener, O
         suggestionRecyclerView = view.findViewById(R.id.searchSuggestionRecyclerView);
         layoutManager = new LinearLayoutManager(getContext());
         layoutManager2 = new LinearLayoutManager(getContext());
-        adapter = new WeatherAdapter(getContext(), weatherDetails);
+        adapter = new WeatherAdapter(getContext(), weatherDetails, this);
         searchAdapter = new WeatherSearchAdapter(getContext(), searchItems, this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
@@ -137,28 +149,22 @@ public class WeatherFragment extends Fragment implements View.OnClickListener, O
                     recyclerView.setVisibility(View.GONE);
                 }
             });
-
-            searchEditText.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(INPUT_METHOD_SERVICE);
-                    inputMethodManager.toggleSoftInputFromWindow(searchEditText.getApplicationWindowToken(), InputMethodManager.SHOW_IMPLICIT, 0);
-                    searchEditText.requestFocus();
-                }
-            });
         }
     }
 
     private void suggestionFilter(final String query) {
         if (!Utils.isNullorWhiteSpace(query))
-            VolleyService.getInstance(getContext(), activity).getWeatherSuggestions(query, new ApiListener<List<SearchItem>>() {
-                @Override
-                public void onSuccess(List<SearchItem> searchItems) {
-                    if (searchItems != null) {
-                        searchAdapter.setDetails(searchItems);
+            if (Utils.haveNetworkConnection(activity))
+                VolleyService.getInstance(getContext(), activity).getWeatherSuggestions(query, new ApiListener<List<SearchItem>>() {
+                    @Override
+                    public void onSuccess(List<SearchItem> searchItems) {
+                        if (searchItems != null) {
+                            searchAdapter.setDetails(searchItems);
+                        }
                     }
-                }
-            });
+                });
+            else
+                activity.showInfoDialog();
 
     }
 
@@ -199,15 +205,21 @@ public class WeatherFragment extends Fragment implements View.OnClickListener, O
     @Override
     public void onItemClick(Object item) {
         if (item != null) {
-            SearchItem searchItem = (SearchItem) item;
-            String query = searchItem.getName();
-            if (!Utils.isNullorWhiteSpace(query)) {
-                String str[] = query.split(",");
-                if (str.length > 0) {
-                    hitApi(str[0]);
-                    searchEditText.setInputType(InputType.TYPE_NULL);
-                    hideKeyboard();
+            if (item instanceof SearchItem) {
+                SearchItem searchItem = (SearchItem) item;
+                String query = searchItem.getName();
+                if (!Utils.isNullorWhiteSpace(query)) {
+                    String str[] = query.split(",");
+                    if (str.length > 0) {
+                        hitApi(str[0]);
+                        searchEditText.setInputType(InputType.TYPE_NULL);
+                        //hideKeyboard();
+                    }
                 }
+            }
+            if (item instanceof Forecastday) {
+                Forecastday forecastday = (Forecastday) item;
+                dataPassListener.passDataBetweenFragments(forecastday);
             }
         }
     }

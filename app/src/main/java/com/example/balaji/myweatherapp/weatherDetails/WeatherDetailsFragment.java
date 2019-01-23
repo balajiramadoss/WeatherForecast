@@ -1,13 +1,18 @@
 package com.example.balaji.myweatherapp.weatherDetails;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.balaji.myweatherapp.R;
+import com.example.balaji.myweatherapp.models.Forecastday;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -15,52 +20,78 @@ import com.example.balaji.myweatherapp.R;
  * create an instance of this fragment.
  */
 public class WeatherDetailsFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
+    private Forecastday forecastday;
+    private TextView maxTempTv;
+    private TextView minTempTv;
+    private TextView conditionTv;
+    private TextView sunriseTv;
+    private TextView sunsetTv;
+    private TextView moonriseTv;
+    private TextView moonsetTv;
+    private TextView uvTv;
+    private ImageView imageView;
+    private Context context;
 
     public WeatherDetailsFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment WeatherDetailsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static WeatherDetailsFragment newInstance(String param1, String param2) {
+    public static WeatherDetailsFragment newInstance(Forecastday forecastday) {
         WeatherDetailsFragment fragment = new WeatherDetailsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
+        fragment.forecastday = forecastday;
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.context = context;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_weather_details, container, false);
+        View view = inflater.inflate(R.layout.fragment_weather_details, container, false);
+        maxTempTv = view.findViewById(R.id.detailMaxTemp);
+        minTempTv = view.findViewById(R.id.detailMinTemp);
+        conditionTv = view.findViewById(R.id.detailsWeatherCondition);
+        sunriseTv = view.findViewById(R.id.sunrise);
+        sunsetTv = view.findViewById(R.id.sunset);
+        moonriseTv = view.findViewById(R.id.moonrise);
+        moonsetTv = view.findViewById(R.id.moonset);
+        uvTv = view.findViewById(R.id.uvIndex);
+        imageView = view.findViewById(R.id.theWeatherImage);
+        if (forecastday != null)
+            refreshUI(forecastday);
+        return view;
     }
 
+    public void setDetails(Forecastday forecastday) {
+        this.forecastday = forecastday;
+        refreshUI(forecastday);
+    }
+
+    private void refreshUI(Forecastday forecastday) {
+        if (forecastday != null) {
+            //I believe the provider for not checking null :)
+            maxTempTv.setText(String.valueOf("Max Temp  " + forecastday.getDay().getMaxtempC() + " C"));
+            minTempTv.setText(String.valueOf("Min Temp  " + forecastday.getDay().getMintempC() + " C"));
+            conditionTv.setText(String.valueOf(forecastday.getDay().getCondition().getText()));
+            sunriseTv.setText("Sunrise at  " + forecastday.getAstro().getSunrise());
+            sunsetTv.setText("Sunset at  " + forecastday.getAstro().getSunset());
+            moonriseTv.setText("Moonrise at  " + forecastday.getAstro().getMoonrise());
+            moonsetTv.setText("Moonset at  " + forecastday.getAstro().getMoonset());
+            uvTv.setText(String.valueOf("UV INDEX  " + forecastday.getDay().getUv()));
+            Glide.with(context).load(forecastday.getDay().getCondition().getIcon()).into(imageView);
+        }
+    }
 }

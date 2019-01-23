@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.example.balaji.myweatherapp.R;
 import com.example.balaji.myweatherapp.helper.BaseRecyclerAdapter;
 import com.example.balaji.myweatherapp.helper.BaseViewHolder;
+import com.example.balaji.myweatherapp.listeners.OnItemClickListener;
 import com.example.balaji.myweatherapp.models.Forecastday;
 import com.example.balaji.myweatherapp.models.WeatherInfo;
 
@@ -28,10 +29,12 @@ public class WeatherAdapter extends BaseRecyclerAdapter {
     private List<Object> items;
     private Context context;
     private WeatherInfo details;
+    private final OnItemClickListener itemClickListener;
 
-    WeatherAdapter(Context context, WeatherInfo details) {
+    WeatherAdapter(Context context, WeatherInfo details, OnItemClickListener itemClickListener) {
         this.context = context;
         this.details = details;
+        this.itemClickListener = itemClickListener;
         items = new ArrayList<>();
         prepareItems();
     }
@@ -85,7 +88,7 @@ public class WeatherAdapter extends BaseRecyclerAdapter {
         notifyDataSetChanged();
     }
 
-    class WeatherViewHolder extends BaseViewHolder {
+    class WeatherViewHolder extends BaseViewHolder implements View.OnClickListener {
         private ImageView iconBig;
         private TextView conditionTv;
         private TextView maxTemp;
@@ -100,6 +103,7 @@ public class WeatherAdapter extends BaseRecyclerAdapter {
             maxTemp = itemView.findViewById(R.id.maxTemp);
             minTemp = itemView.findViewById(R.id.minTemp);
             dateTv = itemView.findViewById(R.id.date);
+            itemView.setOnClickListener(this);
         }
 
         @Override
@@ -117,9 +121,14 @@ public class WeatherAdapter extends BaseRecyclerAdapter {
                 dateTv.setText(item.getDate() + "- Today");
             }
         }
+
+        @Override
+        public void onClick(View v) {
+            itemClickListener.onItemClick(item);
+        }
     }
 
-    class TemperatureViewHolder extends BaseViewHolder {
+    class TemperatureViewHolder extends BaseViewHolder implements View.OnClickListener {
         private TextView maxTemp;
         private TextView minTemp;
         private TextView childDate;
@@ -134,6 +143,7 @@ public class WeatherAdapter extends BaseRecyclerAdapter {
             childDate = itemView.findViewById(R.id.childDate);
             childCondition = itemView.findViewById(R.id.childCondition);
             iconSmall = itemView.findViewById(R.id.childIcon);
+            itemView.setOnClickListener(this);
         }
 
         @Override
@@ -152,6 +162,11 @@ public class WeatherAdapter extends BaseRecyclerAdapter {
                 maxTemp.setText(String.valueOf(item.getDay().getMaxtempC()) + " C");
                 minTemp.setText(String.valueOf(item.getDay().getMintempC()) + " C");
             }
+        }
+
+        @Override
+        public void onClick(View v) {
+            itemClickListener.onItemClick(item);
         }
     }
 

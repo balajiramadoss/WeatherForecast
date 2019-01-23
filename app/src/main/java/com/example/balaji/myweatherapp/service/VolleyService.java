@@ -110,7 +110,8 @@ public class VolleyService {
                     }
                 }
                 Log.d("Error", error.toString());
-                Log.d("<<<ERROR CODE>>>>", String.valueOf(error.networkResponse.statusCode));
+                if (error.networkResponse != null && error.networkResponse.statusCode != 0)
+                    Log.d("<<<ERROR CODE>>>>", String.valueOf(error.networkResponse.statusCode));
                 // Toast.makeText(context, "ERROR!!!!"+error.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
